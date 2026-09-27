@@ -9,6 +9,8 @@ const routes = {
             <p>A ONG Esperança atua para promover inclusão social e melhorar a qualidade de vida de pessoas em situação de vulnerabilidade.</p>
         </section>
 
+        <img src="../images/como-ajudar-ong-de-animais-petlove1.jpg" alt="Adote um animalzinho hoje!">
+
         <section>
             <h2>Nossa missão</h2>
             <p>Desenvolver projetos sociais e incentivar a participação da comunidade em ações solidárias.</p>
@@ -20,8 +22,6 @@ const routes = {
             <p>Telefone: (11) 98775-8771</p>
             <p>Endereço: São Paulo, SP</p>
         </section>
-
-        <img src="../images/como-ajudar-ong-de-animais-petlove1.jpg" alt="Adote um animalzinho hoje!">
     `,
 
     projetos: `
@@ -30,6 +30,7 @@ const routes = {
         <section>
             <h2>Campanhas de Doação</h2>
             <p>Nossas campanhas arrecadam recursos para apoiar pessoas em situação de vulnerabilidade e manter nossos projetos.</p>
+
             <h3>Como doar</h3>
             <p>As doações podem ser realizadas através dos canais disponibilizados pela ONG.</p>
         </section>
@@ -37,14 +38,68 @@ const routes = {
         <section>
             <h2>Voluntariado</h2>
             <p>Os voluntários podem participar de ações sociais, eventos e atividades de apoio à comunidade.</p>
+
             <h3>Como participar</h3>
             <p>Para se voluntariar, acesse nossa página de cadastro e preencha o formulário.</p>
+
+            <a href="#cadastro" data-route="cadastro">Quero ser voluntário</a>
+        </section>
+
+        <section class="feedback-section">
+            <h2>Componentes de Feedback</h2>
+
+            <div class="feedback-card">
+                <h3>Badges</h3>
+                <p>
+                    <span class="badge badge-success">Ativo</span>
+                    <span class="badge badge-warning">Pendente</span>
+                    <span class="badge badge-danger">Cancelado</span>
+                </p>
+            </div>
+
+            <div class="feedback-card">
+                <h3>Alertas</h3>
+
+                <div class="alert alert-success">
+                    Cadastro realizado com sucesso!
+                </div>
+
+                <div class="alert alert-warning">
+                    Atenção: verifique os dados informados.
+                </div>
+
+                <div class="alert alert-danger">
+                    Não foi possível concluir a operação.
+                </div>
+            </div>
+
+            <div class="feedback-card">
+                <h3>Toast</h3>
+
+                <div class="toast">
+                    Alterações salvas com sucesso!
+                </div>
+            </div>
+
+            <div class="feedback-card">
+                <h3>Modal</h3>
+
+                <div class="modal">
+                    <div class="modal-content">
+                        <h3>Confirmar ação</h3>
+                        <p>Deseja realmente realizar esta ação?</p>
+
+                        <button type="button">Confirmar</button>
+                        <button type="button">Cancelar</button>
+                    </div>
+                </div>
+            </div>
         </section>
     `,
 
     cadastro: `
         <h1>Cadastro de Voluntários</h1>
-        
+
         <form id="form-cadastro">
             <fieldset>
                 <legend>Dados pessoais</legend>
@@ -59,9 +114,14 @@ const routes = {
                 <input type="date" id="nascimento" name="nascimento" required>
 
                 <label for="cpf">CPF:</label>
-                <input type="text" id="cpf" name="cpf" required
-                       pattern="[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}"
-                       placeholder="000.000.000-00">
+                <input
+                    type="text"
+                    id="cpf"
+                    name="cpf"
+                    required
+                    pattern="[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}"
+                    placeholder="000.000.000-00"
+                >
             </fieldset>
 
             <fieldset>
@@ -85,14 +145,24 @@ const routes = {
                 </select>
 
                 <label for="cep">CEP:</label>
-                <input type="text" id="cep" name="cep" required
-                       pattern="[0-9]{5}-[0-9]{3}"
-                       placeholder="00000-000">
+                <input
+                    type="text"
+                    id="cep"
+                    name="cep"
+                    required
+                    pattern="[0-9]{5}-[0-9]{3}"
+                    placeholder="00000-000"
+                >
 
                 <label for="telefone">Telefone:</label>
-                <input type="tel" id="telefone" name="telefone" required
-                       pattern="\\([0-9]{2}\\) [0-9]{5}-[0-9]{4}"
-                       placeholder="(00) 00000-0000">
+                <input
+                    type="tel"
+                    id="telefone"
+                    name="telefone"
+                    required
+                    pattern="\\([0-9]{2}\\) [0-9]{5}-[0-9]{4}"
+                    placeholder="(00) 00000-0000"
+                >
             </fieldset>
 
             <button type="submit">Cadastrar</button>
@@ -105,6 +175,7 @@ function render(route) {
 
     if (route === "cadastro") {
         setupFormValidation();
+        restoreVolunteers();
     }
 }
 
@@ -126,12 +197,9 @@ document.addEventListener("click", event => {
 
 window.addEventListener("popstate", () => {
     const route = location.hash.replace("#", "") || "inicio";
+
     render(route);
 });
-
-const initialRoute = location.hash.replace("#", "") || "inicio";
-
-render(initialRoute);
 
 function setupFormValidation() {
     const form = document.querySelector("#form-cadastro");
@@ -164,7 +232,27 @@ function setupFormValidation() {
         });
 
         if (formValid) {
+            const formData = new FormData(form);
+
+            const volunteer = {
+                nome: formData.get("nome"),
+                email: formData.get("email"),
+                nascimento: formData.get("nascimento"),
+                cpf: formData.get("cpf"),
+                endereco: formData.get("endereco"),
+                cidade: formData.get("cidade"),
+                estado: formData.get("estado"),
+                cep: formData.get("cep"),
+                telefone: formData.get("telefone")
+            };
+
+            saveVolunteer(volunteer);
+
+            form.reset();
+
             alert("Cadastro realizado com sucesso!");
+
+            restoreVolunteers();
         }
     });
 }
@@ -182,6 +270,7 @@ function validateField(field) {
         field.style.borderColor = "var(--color-primary)";
 
         const message = document.createElement("small");
+
         message.className = "field-error";
         message.textContent = getValidationMessage(field);
 
@@ -210,3 +299,47 @@ function getValidationMessage(field) {
 
     return "Valor inválido.";
 }
+
+function getVolunteers() {
+    const data = localStorage.getItem("volunteers");
+
+    return data ? JSON.parse(data) : [];
+}
+
+function saveVolunteer(volunteer) {
+    const volunteers = getVolunteers();
+
+    volunteers.push(volunteer);
+
+    localStorage.setItem("volunteers", JSON.stringify(volunteers));
+}
+
+function restoreVolunteers() {
+    const volunteers = getVolunteers();
+
+    if (volunteers.length === 0) {
+        return;
+    }
+
+    const existingFeedback = document.querySelector("#stored-feedback");
+
+    if (existingFeedback) {
+        existingFeedback.remove();
+    }
+
+    const feedback = document.createElement("div");
+
+    feedback.id = "stored-feedback";
+    feedback.className = "alert alert-success";
+    feedback.textContent = `${volunteers.length} cadastro(s) armazenado(s) neste navegador.`;
+
+    const form = document.querySelector("#form-cadastro");
+
+    if (form) {
+        form.prepend(feedback);
+    }
+}
+
+const initialRoute = location.hash.replace("#", "") || "inicio";
+
+render(initialRoute);
