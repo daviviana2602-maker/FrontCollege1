@@ -250,7 +250,12 @@ function setupFormValidation() {
 
             form.reset();
 
-            alert("Cadastro realizado com sucesso!");
+            Swal.fire({
+            title: "Cadastro realizado!",
+            text: "O voluntário foi cadastrado com sucesso.",
+            icon: "success",
+            confirmButtonText: "OK"
+        });
 
             restoreVolunteers();
         }
